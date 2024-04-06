@@ -1,14 +1,13 @@
 package com.ayed.recipe_sharing.dtos;
 
-import lombok.Getter;
+import com.ayed.recipe_sharing.entities.Role;
+import lombok.Builder;
+import lombok.Data;
 
-@Getter
+@Data
+@Builder
 public class AuthenticationResponse {
   private String token;
-  private String message;
-
-  public AuthenticationResponse(String token, String message) {
-    this.token = token;
-    this.message = message;
-  }
+  private Role role;
+  private Long userId;
 }

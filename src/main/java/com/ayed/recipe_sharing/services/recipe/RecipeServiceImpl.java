@@ -1,6 +1,7 @@
 package com.ayed.recipe_sharing.services.recipe;
 
 import com.ayed.recipe_sharing.dtos.RecipeDto;
+import com.ayed.recipe_sharing.dtos.RecipeResponseDto;
 import com.ayed.recipe_sharing.entities.Recipe;
 import com.ayed.recipe_sharing.entities.User;
 import com.ayed.recipe_sharing.exceptions.ResourceNotFoundException;
@@ -17,11 +18,11 @@ public class RecipeServiceImpl implements RecipeService {
   private final RecipeRepository recipeRepository;
   private final UserService userService;
 
-  public List<RecipeDto> getAllRecipes() {
-    return recipeRepository.findAll().stream().map(Recipe::getRecipeDto).toList();
+  public List<RecipeResponseDto> getAllRecipes() {
+    return recipeRepository.findAll().stream().map(Recipe::getRecipeResponseDto).toList();
   }
 
-  public RecipeDto createRecipe(Long userId, RecipeDto recipeDto) {
+  public RecipeResponseDto createRecipe(Long userId, RecipeDto recipeDto) {
     User user = userService.getUserById(userId);
     Recipe newRecipe =
         Recipe.builder()
@@ -32,23 +33,23 @@ public class RecipeServiceImpl implements RecipeService {
             .vegetarian(recipeDto.isVegetarian())
             .user(user)
             .build();
-    return recipeRepository.save(newRecipe).getRecipeDto();
+    return recipeRepository.save(newRecipe).getRecipeResponseDto();
   }
 
-  public RecipeDto updateRecipe(Long recipeId, RecipeDto recipeDto) {
+  public RecipeResponseDto updateRecipe(Long recipeId, RecipeDto recipeDto) {
     Recipe updatedRecipe = getRecipeById(recipeId);
     updatedRecipe.setDescription(recipeDto.getDescription());
     updatedRecipe.setTitle(recipeDto.getTitle());
     updatedRecipe.setVegetarian(recipeDto.isVegetarian());
     if (recipeDto.getImage() != null) updatedRecipe.setImage(recipeDto.getImage());
-    return recipeRepository.save(updatedRecipe).getRecipeDto();
+    return recipeRepository.save(updatedRecipe).getRecipeResponseDto();
   }
 
   public void deleteRecipeById(Long recipeId) {
     recipeRepository.delete(getRecipeById(recipeId));
   }
 
-  public RecipeDto likeRecipe(Long recipeId, Long userId) {
+  public RecipeResponseDto likeRecipe(Long recipeId, Long userId) {
     User user = userService.getUserById(userId);
     Recipe recipe = getRecipeById(recipeId);
     if (recipe.getLikes().contains(user.getId())) {
@@ -56,12 +57,18 @@ public class RecipeServiceImpl implements RecipeService {
     } else {
       recipe.getLikes().add(user.getId());
     }
-    return recipeRepository.save(recipe).getRecipeDto();
+    return recipeRepository.save(recipe).getRecipeResponseDto();
   }
 
   public Recipe getRecipeById(Long recipeId) {
     return recipeRepository
         .findById(recipeId)
         .orElseThrow(() -> new ResourceNotFoundException("Recipe not found with id: " + recipeId));
+  }
+
+  public List<RecipeResponseDto> getRecipesByTitle(String title) {
+    return recipeRepository.findRecipeByTitleContaining(title).stream()
+        .map(Recipe::getRecipeResponseDto)
+        .toList();
   }
 }

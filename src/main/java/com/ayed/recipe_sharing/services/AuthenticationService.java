@@ -3,6 +3,7 @@ package com.ayed.recipe_sharing.services;
 import com.ayed.recipe_sharing.dtos.AuthenticationRequest;
 import com.ayed.recipe_sharing.dtos.AuthenticationResponse;
 import com.ayed.recipe_sharing.dtos.RegisterRequest;
+import com.ayed.recipe_sharing.entities.Role;
 import com.ayed.recipe_sharing.entities.Token;
 import com.ayed.recipe_sharing.entities.User;
 import com.ayed.recipe_sharing.exceptions.UserExistException;
@@ -36,11 +37,11 @@ public class AuthenticationService {
 
     User createdUser =
         User.builder()
-            .firstName(request.getFirstName())
-            .lastName(request.getLastName())
+            .firstname(request.getFirstname())
+            .lastname(request.getLastname())
             .email(request.getEmail())
-            .role(request.getRole())
             .password(passwordEncoder.encode(request.getPassword()))
+            .role(Role.USER)
             .build();
 
     User user = userRepository.save(createdUser);
@@ -48,8 +49,11 @@ public class AuthenticationService {
     String jwt = jwtService.generateToken(user);
 
     saveUserToken(jwt, user);
-
-    return new AuthenticationResponse(jwt, "User created successfully");
+    return AuthenticationResponse.builder()
+        .userId(user.getId())
+        .token(jwt)
+        .role(user.getRole())
+        .build();
   }
 
   public AuthenticationResponse authenticate(AuthenticationRequest authenticationRequest) {
@@ -62,8 +66,11 @@ public class AuthenticationService {
 
     revokeAllTokenByUser(user);
     saveUserToken(jwt, user);
-
-    return new AuthenticationResponse(jwt, "Successfully authenticated");
+    return AuthenticationResponse.builder()
+        .userId(user.getId())
+        .token(jwt)
+        .role(user.getRole())
+        .build();
   }
 
   /**

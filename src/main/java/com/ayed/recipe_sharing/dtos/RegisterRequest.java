@@ -7,16 +7,13 @@ import lombok.Data;
 @Data
 public class RegisterRequest {
   @NotEmpty(message = "Firstname annot be empty or null.")
-  private String firstName;
+  private String firstname;
 
   @NotEmpty(message = "Lastname annot be empty or null.")
-  private String lastName;
+  private String lastname;
 
   @NotEmpty(message = "Email annot be empty or null.")
   private String email;
-
-  @NotNull(message = "Role annot be null.")
-  private Role role;
 
   @NotEmpty(message = "Password annot be empty or null.")
   @NotBlank(message = "Password cannot be blank.")
