@@ -1,16 +1,11 @@
 package com.ayed.recipe_sharing.dtos;
 
 import com.ayed.recipe_sharing.entities.Role;
-import jakarta.validation.constraints.NotEmpty;
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
+import jakarta.validation.constraints.*;
 import lombok.Data;
 
 @Data
-@Builder
-public class UserDto {
-  private Long id;
-
+public class RegisterRequest {
   @NotEmpty(message = "Firstname annot be empty or null.")
   private String firstName;
 
@@ -22,4 +17,9 @@ public class UserDto {
 
   @NotNull(message = "Role annot be null.")
   private Role role;
+
+  @NotEmpty(message = "Password annot be empty or null.")
+  @NotBlank(message = "Password cannot be blank.")
+  @Size(min = 4, max = 32, message = "Password must be between 4 and 32 characters long.")
+  private String password;
 }

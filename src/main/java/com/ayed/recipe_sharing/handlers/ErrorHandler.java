@@ -1,9 +1,11 @@
 package com.ayed.recipe_sharing.handlers;
 
+import com.ayed.recipe_sharing.exceptions.ResourceNotFoundException;
 import com.ayed.recipe_sharing.exceptions.UserExistException;
 import jakarta.validation.ValidationException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -11,10 +13,10 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 
 @ControllerAdvice
 public class ErrorHandler {
-  @ExceptionHandler(IllegalArgumentException.class)
+  @ExceptionHandler(ResourceNotFoundException.class)
   @ResponseBody
   @ResponseStatus(HttpStatus.NOT_FOUND)
-  public ResponseEntity<ErrorResponse> handleResourceNotFound(IllegalArgumentException ex) {
+  public ResponseEntity<ErrorResponse> handleResourceNotFound(ResourceNotFoundException ex) {
     ErrorResponse errorResponse =
         ErrorResponse.builder()
             .source(ex.getClass().getName())
@@ -45,6 +47,19 @@ public class ErrorHandler {
             .message("Conflict : " + ex.getMessage())
             .build();
     return new ResponseEntity<>(errorResponse, HttpStatus.CONFLICT);
+  }
+
+  @ExceptionHandler(MethodArgumentNotValidException.class)
+  @ResponseBody
+  @ResponseStatus(HttpStatus.BAD_REQUEST)
+  public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(
+      MethodArgumentNotValidException ex) {
+    ErrorResponse errorResponse =
+        ErrorResponse.builder()
+            .source(ex.getClass().getName())
+            .message("Validation failed : " + ex.getMessage())
+            .build();
+    return new ResponseEntity<>(errorResponse, HttpStatus.BAD_REQUEST);
   }
 
   @ExceptionHandler(Exception.class)
