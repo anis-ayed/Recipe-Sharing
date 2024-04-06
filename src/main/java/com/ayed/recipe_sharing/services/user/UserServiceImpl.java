@@ -1,34 +1,28 @@
-package com.ayed.recipe_sharing.services;
+package com.ayed.recipe_sharing.services.user;
 
 import com.ayed.recipe_sharing.dtos.UserDto;
 import com.ayed.recipe_sharing.entities.User;
-import com.ayed.recipe_sharing.exceptions.UserExistException;
+import com.ayed.recipe_sharing.exceptions.ResourceNotFoundException;
 import com.ayed.recipe_sharing.repositories.UserRepository;
+import java.util.List;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
 public class UserServiceImpl implements UserService {
   private final UserRepository userRepository;
 
-  public UserDto createUser(User user) {
-    if (emailExists(user.getEmail())) {
-      throw new UserExistException("Email already exists in the database!");
-    }
-    return saveUser(user);
-  }
-
   public void deleteUserById(Long userId) {
     userRepository.delete(getUserById(userId));
   }
 
-  public UserDto updateUserById(Long userId, User user) {
+  public UserDto updateUserById(Long userId, UserDto userDto) {
     User existingUser = getUserById(userId);
-    existingUser.setFullName(user.getFullName());
-    existingUser.setEmail(user.getEmail());
+    existingUser.setFirstName(userDto.getFirstName());
+    existingUser.setLastName(userDto.getLastName());
+    existingUser.setEmail(userDto.getEmail());
+    existingUser.setRole(userDto.getRole());
     return saveUser(existingUser);
   }
 
@@ -39,11 +33,7 @@ public class UserServiceImpl implements UserService {
   public User getUserById(Long userId) {
     return userRepository
         .findById(userId)
-        .orElseThrow(() -> new IllegalArgumentException("User not found with id: " + userId));
-  }
-
-  private boolean emailExists(String email) {
-    return userRepository.findByEmail(email).isPresent();
+        .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
   }
 
   private UserDto saveUser(User user) {
