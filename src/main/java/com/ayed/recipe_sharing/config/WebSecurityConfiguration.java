@@ -2,6 +2,7 @@ package com.ayed.recipe_sharing.config;
 
 import com.ayed.recipe_sharing.filters.JwtAuthenticationFilter;
 import com.ayed.recipe_sharing.services.user.UserDetailsServiceImpl;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpStatus;
@@ -20,22 +21,14 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 @EnableWebSecurity
-public class SecurityConfig {
+@RequiredArgsConstructor
+public class WebSecurityConfiguration {
 
   private final UserDetailsServiceImpl userDetailsServiceImpl;
 
   private final JwtAuthenticationFilter jwtAuthenticationFilter;
 
   private final CustomLogoutHandler logoutHandler;
-
-  public SecurityConfig(
-      UserDetailsServiceImpl userDetailsServiceImp,
-      JwtAuthenticationFilter jwtAuthenticationFilter,
-      CustomLogoutHandler logoutHandler) {
-    this.userDetailsServiceImpl = userDetailsServiceImp;
-    this.jwtAuthenticationFilter = jwtAuthenticationFilter;
-    this.logoutHandler = logoutHandler;
-  }
 
   @Bean
   public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {

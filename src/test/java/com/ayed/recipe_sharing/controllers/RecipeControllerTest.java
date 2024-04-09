@@ -5,7 +5,9 @@ import static org.springframework.test.web.servlet.request.MockMvcRequestBuilder
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
 import com.ayed.recipe_sharing.controllers.recipe.RecipeController;
-import com.ayed.recipe_sharing.dtos.RecipeDto;
+import com.ayed.recipe_sharing.dtos.RecipeResponseDto;
+import com.ayed.recipe_sharing.dtos.UserDto;
+import com.ayed.recipe_sharing.entities.Role;
 import com.ayed.recipe_sharing.services.recipe.RecipeService;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -26,21 +28,30 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 @WebMvcTest(RecipeController.class)
 public class RecipeControllerTest {
   private static final List<Long> likes = new ArrayList<>();
-  private static final RecipeDto recipeDto1 =
-      RecipeDto.builder()
+
+  private static final UserDto userDto =
+      UserDto.builder()
+          .role(Role.USER)
+          .email("test@gmail.com")
+          .firstname("firstname")
+          .lastname("lastname")
+          .id(1L)
+          .build();
+  private static final RecipeResponseDto recipeDto1 =
+      RecipeResponseDto.builder()
           .id(1L)
           .title("Recipe 1")
           .description("description recipe 1")
-          .userId(1L)
+          .user(userDto)
           .vegetarian(false)
           .build();
 
-  private static final RecipeDto recipeDto2 =
-      RecipeDto.builder()
+  private static final RecipeResponseDto recipeDto2 =
+      RecipeResponseDto.builder()
           .id(1L)
           .title("Recipe 2")
           .description("description recipe 2")
-          .userId(1L)
+          .user(userDto)
           .vegetarian(true)
           .build();
   @Autowired private MockMvc mockMvc;
@@ -56,7 +67,7 @@ public class RecipeControllerTest {
 
   @Test
   public void testGetAllRecipes() throws Exception {
-    List<RecipeDto> recipes = Arrays.asList(recipeDto1, recipeDto2);
+    List<RecipeResponseDto> recipes = Arrays.asList(recipeDto1, recipeDto2);
 
     when(recipeService.getAllRecipes()).thenReturn(recipes);
 

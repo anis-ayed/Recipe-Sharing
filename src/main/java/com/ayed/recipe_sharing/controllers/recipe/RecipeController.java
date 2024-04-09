@@ -1,6 +1,7 @@
 package com.ayed.recipe_sharing.controllers.recipe;
 
 import com.ayed.recipe_sharing.dtos.RecipeDto;
+import com.ayed.recipe_sharing.dtos.RecipeResponseDto;
 import com.ayed.recipe_sharing.exceptions.ResourceNotFoundException;
 import com.ayed.recipe_sharing.services.recipe.RecipeService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -30,7 +31,7 @@ public class RecipeController {
   @Operation(summary = "Get all recipes", description = "Retrieve all recipes.")
   @ApiResponses(value = {@ApiResponse(responseCode = "200", description = "Successful operation")})
   @GetMapping
-  public ResponseEntity<List<RecipeDto>> getAllRecipes() {
+  public ResponseEntity<List<RecipeResponseDto>> getAllRecipes() {
     return ResponseEntity.ok(recipeService.getAllRecipes());
   }
 
@@ -47,9 +48,9 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "Recipe not found")
       })
   @GetMapping("/{recipeId}")
-  public ResponseEntity<RecipeDto> getRecipeById(
+  public ResponseEntity<RecipeResponseDto> getRecipeById(
       @Parameter(description = "Recipe ID", required = true) @PathVariable Long recipeId) {
-    return ResponseEntity.ok(recipeService.getRecipeById(recipeId).getRecipeDto());
+    return ResponseEntity.ok(recipeService.getRecipeById(recipeId).getRecipeResponseDto());
   }
 
   /**
@@ -62,7 +63,7 @@ public class RecipeController {
   @ApiResponses(
       value = {@ApiResponse(responseCode = "201", description = "Recipe created successfully")})
   @PostMapping
-  public ResponseEntity<RecipeDto> createRecipe(@Valid @RequestBody RecipeDto recipeDto) {
+  public ResponseEntity<RecipeResponseDto> createRecipe(@Valid @RequestBody RecipeDto recipeDto) {
     return ResponseEntity.status(HttpStatus.CREATED)
         .body(recipeService.createRecipe(recipeDto.getUserId(), recipeDto));
   }
@@ -83,7 +84,7 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "Recipe not found")
       })
   @PutMapping("/{recipeId}")
-  public ResponseEntity<RecipeDto> updateRecipeById(
+  public ResponseEntity<RecipeResponseDto> updateRecipeById(
       @Parameter(description = "Recipe ID", required = true) @PathVariable Long recipeId,
       @Parameter(description = "Updated recipe details", required = true) @RequestBody
           RecipeDto recipeDto) {
@@ -129,12 +130,30 @@ public class RecipeController {
         @ApiResponse(responseCode = "404", description = "Recipe or User not found."),
       })
   @PutMapping("/like/{recipeId}/{userId}")
-  public ResponseEntity<RecipeDto> likeRecipe(
+  public ResponseEntity<RecipeResponseDto> likeRecipe(
       @Parameter(description = "ID of the recipe to like", required = true) @PathVariable
           Long recipeId,
       @Parameter(description = "ID of the user who is liking the recipe", required = true)
           @PathVariable
           Long userId) {
     return ResponseEntity.ok(recipeService.likeRecipe(recipeId, userId));
+  }
+
+  /**
+   * Récupère les recettes par son titre.
+   *
+   * @param title Le titre de la recette à récupérer.
+   * @return ResponseEntity contenant le DTO de la recette.
+   */
+  @Operation(summary = "Get recipes by title", description = "Retrieve all recipes like title.")
+  @ApiResponses(
+      value = {
+        @ApiResponse(responseCode = "200", description = "Successful operation"),
+        @ApiResponse(responseCode = "404", description = "Recipe not found")
+      })
+  @GetMapping("/search/{title}")
+  public ResponseEntity<List<RecipeResponseDto>> getRecipesByTitle(
+      @Parameter(description = "Title", required = true) @PathVariable String title) {
+    return ResponseEntity.ok(recipeService.getRecipesByTitle(title));
   }
 }

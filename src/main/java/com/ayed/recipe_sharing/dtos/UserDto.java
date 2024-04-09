@@ -12,10 +12,10 @@ public class UserDto {
   private Long id;
 
   @NotEmpty(message = "Firstname annot be empty or null.")
-  private String firstName;
+  private String firstname;
 
   @NotEmpty(message = "Lastname annot be empty or null.")
-  private String lastName;
+  private String lastname;
 
   @NotEmpty(message = "Email annot be empty or null.")
   private String email;

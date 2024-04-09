@@ -19,8 +19,8 @@ public class UserServiceImpl implements UserService {
 
   public UserDto updateUserById(Long userId, UserDto userDto) {
     User existingUser = getUserById(userId);
-    existingUser.setFirstName(userDto.getFirstName());
-    existingUser.setLastName(userDto.getLastName());
+    existingUser.setFirstname(userDto.getFirstname());
+    existingUser.setLastname(userDto.getLastname());
     existingUser.setEmail(userDto.getEmail());
     existingUser.setRole(userDto.getRole());
     return saveUser(existingUser);
